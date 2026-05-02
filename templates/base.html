@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Health App</title>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+    background:#f4f6f9;
+}
+.navbar{
+    margin-bottom:20px;
+}
+</style>
+
+<!-- 🌍 TRANSLATIONS -->
+<script>
+const translations = {
+
+en: {
+    home: "Home",
+    about: "About",
+    contact: "Contact",
+    developer: "Developer",
+    blog: "Blog",
+    history: "History",
+    dashboard: "Dashboard",
+    bmi: "BMI Calculator",
+    logout: "Logout",
+    title:"AI Health Assistant",
+    button:"Ask AI",
+    placeholder:"Enter symptoms",
+    symptoms:"Enter Symptoms",
+    age:"Select Age Group",
+    chooseAge:"Choose Age"
+},
+
+te: {
+    home: "హోమ్",
+    about: "గురించి",
+    contact: "సంప్రదించండి",
+    developer: "డెవలపర్",
+    blog: "బ్లాగ్",
+    history: "చరిత్ర",
+    dashboard: "డాష్‌బోర్డ్",
+    bmi: "BMI కాలిక్యులేటర్",
+    logout: "లాగ్ అవుట్",
+    title:"AI ఆరోగ్య సహాయకుడు",
+    button:"AI ని అడగండి",
+    placeholder:"లక్షణాలు నమోదు చేయండి",
+    symptoms:"లక్షణాలు నమోదు చేయండి",
+    age:"వయస్సు ఎంచుకోండి",
+    chooseAge:"వయస్సు ఎంచుకోండి"
+},
+
+hi: {
+    home: "होम",
+    about: "के बारे में",
+    contact: "संपर्क करें",
+    developer: "डेवलपर",
+    blog: "ब्लॉग",
+    history: "इतिहास",
+    dashboard: "डैशबोर्ड",
+    bmi: "बीएमआई कैलकुलेटर",
+    logout: "लॉग आउट",
+    title:"AI स्वास्थ्य सहायक",
+    button:"AI से पूछें",
+    placeholder:"लक्षण लिखें",
+    symptoms:"लक्षण दर्ज करें",
+    age:"आयु चुनें",
+    chooseAge:"आयु चुनें"
+}
+
+};
+</script>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container-fluid">
+
+<a class="navbar-brand" href="/chatbot" id="navTitle">Health Center</a>
+
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+data-bs-target="#navbarNav">
+<span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarNav">
+
+<ul class="navbar-nav me-auto">
+
+<li class="nav-item"><a class="nav-link" href="/chatbot" id="navHome">Home</a></li>
+<li class="nav-item"><a class="nav-link" href="/about" id="navAbout">About</a></li>
+<li class="nav-item"><a class="nav-link" href="/contact" id="navContact">Contact</a></li>
+<li class="nav-item"><a class="nav-link" href="/developer" id="navDeveloper">Developer</a></li>
+<li class="nav-item"><a class="nav-link" href="/blog" id="navBlog">Blog</a></li>
+<li class="nav-item"><a class="nav-link" href="/history" id="navHistory">History</a></li>
+<li class="nav-item"><a class="nav-link" href="/dashboard" id="navDashboard">Dashboard</a></li>
+<li class="nav-item"><a class="nav-link" href="/bmi" id="navBMI">BMI Calculator</a></li>
+
+</ul>
+
+<select onchange="changeLang(this.value)" class="form-select w-auto me-2">
+<option value="en" {% if lang=='en' %}selected{% endif %}>EN</option>
+<option value="te" {% if lang=='te' %}selected{% endif %}>TE</option>
+<option value="hi" {% if lang=='hi' %}selected{% endif %}>HI</option>
+</select>
+
+<a href="/logout" class="btn btn-danger" id="navLogout">Logout</a>
+
+</div>
+</div>
+</nav>
+
+<div class="container">
+{% block content %}{% endblock %}
+</div>
+
+<script>
+function changeLang(lang){
+fetch("/set_language", {
+method:"POST",
+headers:{"Content-Type":"application/x-www-form-urlencoded"},
+body:"lang="+lang
+}).then(()=> location.reload());
+}
+</script>
+
+<script>
+function applyNavbarTranslation(){
+
+let lang = "{{ lang }}";
+
+document.getElementById("navHome").innerText = translations[lang].home;
+document.getElementById("navAbout").innerText = translations[lang].about;
+document.getElementById("navContact").innerText = translations[lang].contact;
+document.getElementById("navDeveloper").innerText = translations[lang].developer;
+document.getElementById("navBlog").innerText = translations[lang].blog;
+document.getElementById("navHistory").innerText = translations[lang].history;
+document.getElementById("navDashboard").innerText = translations[lang].dashboard;
+document.getElementById("navBMI").innerText = translations[lang].bmi;
+document.getElementById("navLogout").innerText = translations[lang].logout;
+
+}
+window.onload = applyNavbarTranslation;
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

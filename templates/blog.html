@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blog | Health Care Center</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .logo {
+            width: 50px;
+            height: 50px;
+        }
+        .myimg {
+            width: 50px;
+            height: 50px;
+            border: 2px solid black;
+            border-radius: 25px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container-fluid">
+
+<div class="logo">
+<img class="myimg" src="{{ url_for('static', filename='img.png') }}">
+</div>
+
+<a class="navbar-brand ms-2" href="/chatbot">Health Center</a>
+
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+data-bs-target="#navbarNav">
+<span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav me-auto">
+
+<li class="nav-item">
+<a class="nav-link" href="/chatbot">Home</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/about">About</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/contact">Contact</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/developer">Developer</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link active" href="/blog">Blog</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/history">History</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/dashboard">Dashboard</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/bmi">BMI Calculator</a>
+</li>
+
+</ul>
+
+<a href="/logout" class="btn btn-danger">Logout</a>
+
+</div>
+</div>
+</nav>
+
+<!-- ✅ BLOG CONTENT -->
+<div class="container my-5">
+
+    <div class="card shadow-lg p-4">
+
+        <h2 class="text-center mb-4">
+            Building a Symptom-Based Disease Diagnosis Web App with Flask and Machine Learning
+        </h2>
+
+        <p>
+            In the age of technology, access to accurate and timely healthcare is more
+            important than ever. Our symptom-based disease diagnosis web application
+            leverages Flask and Machine Learning to help users identify potential
+            illnesses quickly and efficiently.
+        </p>
+
+        <h3>The Problem</h3>
+        <p>
+            Many people experience symptoms and seek immediate guidance about their
+            health concerns. Differentiating between diseases can be difficult,
+            especially when symptoms overlap.
+        </p>
+
+        <h3>The Solution</h3>
+        <p>
+            Our web application allows users to enter their symptoms and receive
+            predictions powered by a trained Decision Tree Classifier.
+        </p>
+
+        <ol>
+            <li><b>Symptom Input:</b> Users enter symptoms through a simple interface.</li>
+            <li><b>Machine Learning Model:</b> A trained classifier predicts the most likely disease.</li>
+            <li><b>Prediction:</b> Instant results provide insights into possible conditions.</li>
+            <li><b>Additional Information:</b> Users receive precautions, medications, diet advice, and workouts.</li>
+        </ol>
+
+        <h3>Key Features</h3>
+        <ul>
+            <li><b>User-Friendly Interface:</b> Easy navigation for all users.</li>
+            <li><b>Accurate Predictions:</b> Machine learning-based results.</li>
+            <li><b>Comprehensive Information:</b> Detailed healthcare guidance.</li>
+            <li><b>Educational Content:</b> Blogs that promote health awareness.</li>
+        </ul>
+
+        <h3>Conclusion</h3>
+        <p>
+            This project combines machine learning with healthcare to make medical
+            insights more accessible. By empowering users with knowledge, we aim
+            to improve health awareness and support better decision-making.
+        </p>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

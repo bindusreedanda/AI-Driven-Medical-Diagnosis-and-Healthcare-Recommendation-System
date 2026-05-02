@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Medical Chatbot</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+background:#f4f6f9;
+}
+
+.navbar{
+margin-bottom:30px;
+}
+
+.logo{
+width:50px;
+height:50px;
+}
+
+.myimg{
+width:50px;
+height:50px;
+border-radius:50%;
+}
+
+.card-section{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:15px;
+box-shadow:0px 4px 10px rgba(0,0,0,0.08);
+}
+
+.loader{
+display:none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container-fluid">
+
+<div class="logo">
+<img class="myimg" src="{{ url_for('static', filename='img.png') }}">
+</div>
+
+<a class="navbar-brand ms-2" href="/chatbot">Health Center</a>
+
+<button class="navbar-toggler" type="button"
+data-bs-toggle="collapse"
+data-bs-target="#navbarNav">
+<span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarNav">
+
+<ul class="navbar-nav me-auto">
+
+<li class="nav-item">
+<a class="nav-link active" href="/chatbot">Home</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/about">About</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/contact">Contact</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/developer">Developer</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/blog">Blog</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/history">History</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/dashboard">Dashboard</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/bmi">BMI Calculator</a>
+</li>
+
+</ul>
+
+
+<a href="/logout" class="btn btn-danger">Logout</a>
+
+</div>
+</div>
+</nav>
+
+
+<div class="container">
+
+<h2 class="text-center mb-4">AI Medical Diagnosis Assistant</h2>
+
+
+<!-- INPUT CARD -->
+<div class="card p-4 shadow">
+
+<form method="POST" onsubmit="showLoader()">
+
+<!-- 🔥 TEXT + VOICE INPUT -->
+<div class="mb-3">
+<label>Enter Symptoms</label>
+
+<div class="input-group">
+
+<textarea id="message" name="message" class="form-control"
+placeholder="Type or speak symptoms..." required></textarea>
+
+<button type="button"
+class="btn btn-secondary"
+onclick="startVoice()">
+
+🎤
+
+</button>
+
+</div>
+
+</div>
+
+
+<div class="mb-3">
+<label>Select Age Group</label>
+
+<select name="age" class="form-select" required>
+<option value="">Choose Age</option>
+<option value="child">0 - 12</option>
+<option value="teen">13 - 19</option>
+<option value="adult">20 - 60</option>
+<option value="senior">60+</option>
+</select>
+
+</div>
+
+<button class="btn btn-primary w-100" id="askBtn">
+Ask AI
+</button>
+
+<div class="text-center mt-3 loader" id="loading">
+<div class="spinner-border text-primary"></div>
+<p>Analyzing symptoms...</p>
+</div>
+
+</form>
+
+</div>
+
+
+
+<!-- RESULT -->
+
+{% if result %}
+<div class="mt-5">
+
+{% if result.error %}
+<div class="alert alert-danger">
+{{ result.error }}
+</div>
+
+{% else %}
+
+<div class="alert alert-success">
+Diagnosis completed successfully
+</div>
+
+<h4 class="text-success mb-3">
+Diagnosis Result
+</h4>
+
+{% for key,value in result.items() %}
+<div class="card-section">
+<h5>{{ key.replace('_',' ').title() }}</h5>
+<p>{{ value }}</p>
+</div>
+{% endfor %}
+
+<br>
+
+<!-- PDF -->
+<form method="POST" action="/download_current">
+
+<input type="hidden" name="report_data" value='{{ result|tojson }}'>
+<input type="hidden" name="symptoms" value="{{ request.form.message }}">
+
+<button class="btn btn-success w-100 pdf-btn">
+📄 Download Full Medical Report (PDF)
+</button>
+
+</form>
+
+<!-- EMAIL -->
+<form method="POST" action="/send_email">
+
+<input type="email" name="email" class="form-control mt-3" required>
+
+<input type="hidden" name="report" value='{{ result|tojson }}'>
+<input type="hidden" name="symptoms" value="{{ request.form.message }}">
+
+<button class="btn btn-warning w-100 mt-2">
+Send Report to Email
+</button>
+
+</form>
+
+<!-- HOSPITAL -->
+<div class="card-section text-center mt-4">
+<h5>Nearby Hospitals</h5>
+<p>If symptoms are severe consult hospital immediately</p>
+<button class="btn btn-danger" onclick="openHospitals()">
+Find Hospitals Near Me
+</button>
+</div>
+
+{% endif %}
+</div>
+{% endif %}
+
+</div>
+
+<!-- JS -->
+<script>
+
+function showLoader(){
+document.getElementById("loading").style.display="block"
+document.getElementById("askBtn").disabled=true
+}
+
+/* 🎤 VOICE INPUT */
+function startVoice(){
+
+let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+recognition.lang = "en-US";   // change to te-IN or hi-IN if needed
+recognition.start();
+
+recognition.onresult = function(event){
+
+let speech = event.results[0][0].transcript;
+
+document.getElementById("symptoms").value = speech;
+
+};
+
+recognition.onerror = function(){
+alert("Voice not supported or permission denied");
+};
+
+}
+
+/* 📍 MAP */
+function openHospitals(){
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition(function(position){
+
+let lat=position.coords.latitude
+let lon=position.coords.longitude
+
+let url=`https://www.google.com/maps/search/hospitals/@${lat},${lon},15z`
+
+window.open(url,"_blank")
+
+})
+
+}else{
+alert("Location not supported")
+}
+
+}
+
+</script>
+
+<script>
+
+let isSpeaking = false;
+
+function toggleSpeech(){
+
+    // browser support check
+    if (!('speechSynthesis' in window)) {
+        alert("Your browser does not support voice");
+        return;
+    }
+
+    if(isSpeaking){
+        speechSynthesis.cancel();
+        isSpeaking = false;
+        document.getElementById("speakBtn").innerText = "🔊 Listen to Result";
+        return;
+    }
+
+    let text = "";
+
+    {% if result %}
+        {% for key, value in result.items() %}
+            text += "{{ key.replace('_',' ') }}: {{ value }}. ";
+        {% endfor %}
+    {% endif %}
+
+    console.log("VOICE TEXT:", text); // debug
+
+    let speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-US";
+
+    speech.onend = function(){
+        isSpeaking = false;
+        document.getElementById("speakBtn").innerText = "🔊 Listen to Result";
+    };
+
+    speechSynthesis.speak(speech);
+
+    isSpeaking = true;
+    document.getElementById("speakBtn").innerText = "⏹ Stop Voice";
+
+    let lang = document.getElementById("lang").value;
+
+if(lang === "te"){
+    speech.lang = "te-IN";
+}
+else if(lang === "hi"){
+    speech.lang = "hi-IN";
+}
+else{
+    speech.lang = "en-US";
+}
+}
+
+</script>
+ <script>
+
+async function translateText(text, sourceLang, targetLang){
+
+    let res = await fetch("https://libretranslate.de/translate", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            q: text,
+            source: sourceLang,
+            target: targetLang
+        })
+    });
+
+    let data = await res.json();
+    return data.translatedText;
+}
+
+async function handleSubmit(e){
+    e.preventDefault();
+
+    let lang = document.getElementById("lang").value;
+    let msgBox = document.getElementById("message");
+
+    if(lang !== "en"){
+        let translated = await translateText(msgBox.value, lang, "en");
+        msgBox.value = translated;
+    }
+
+    e.target.submit();
+}
+
+</script>
+
+<script>
+
+async function translateResult(){
+
+    let lang = document.getElementById("lang").value;
+
+    if(lang === "en") return;
+
+    let elements = document.querySelectorAll(".card-section p");
+
+    for(let el of elements){
+
+        let translated = await translateText(el.innerText, "en", lang);
+        el.innerText = translated;
+    }
+}
+
+window.onload = translateResult;
+
+</script>
+
+<script>
+
+const translations = {
+
+    en: {
+        title: "AI Health Assistant",
+        button: "Ask AI",
+        placeholder: "Enter your symptoms...",
+        result: "Result",
+        listen: "Listen to Result"
+    },
+
+    te: {
+        title: "AI ఆరోగ్య సహాయకుడు",
+        button: "AI ని అడగండి",
+        placeholder: "మీ లక్షణాలు నమోదు చేయండి...",
+        result: "ఫలితం",
+        listen: "ఫలితాన్ని వినండి"
+    },
+
+    hi: {
+        title: "AI स्वास्थ्य सहायक",
+        button: "AI से पूछें",
+        placeholder: "अपने लक्षण लिखें...",
+        result: "परिणाम",
+        listen: "परिणाम सुनें"
+    }
+
+};
+
+</script>
+
+<script>
+
+function changeLanguage(){
+
+    let lang = document.getElementById("lang").value;
+
+    document.getElementById("title").innerText = translations[lang].title;
+    document.getElementById("askBtn").innerText = translations[lang].button;
+    document.getElementById("message").placeholder = translations[lang].placeholder;
+
+    if(document.getElementById("speakBtn")){
+        document.getElementById("speakBtn").innerText = translations[lang].listen;
+    }
+}
+
+</script>
+<script>
+window.onload = changeLanguage;
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
